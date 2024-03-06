@@ -12,26 +12,26 @@ const init = async () => {
     // Middleware
     app.use(express.json());
     app.use(express.urlencoded({ extended: false }));
-    
+
     // User Routes
     const userRouter = require('./routes/user');
     app.use('/user', userRouter);
-    
+
     // Product Routes
     const productRouter = require('./routes/product');
     app.use('/product', productRouter);
-    
+
     // Error handling middleware
     app.use((err, req, res, next) => {
         console.error(err.stack);
         res.status(500).send('Internal Server Error');
     });
-    
+
     // Route not found middleware
     app.use((req, res, next) => {
         res.status(404).send("Sorry can't find that!");
     });
-    
+
     // Start server
     const PORT = process.env.PORT || 5555;
     app.listen(PORT, () => {
@@ -45,3 +45,4 @@ process.on("unhandledRejection", err => {
 });
 
 init();
+module.exports = app;

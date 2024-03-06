@@ -1,85 +1,3 @@
-// 'use strict'
-
-// /* eslint-disable */
-// import supertest from 'supertest'
-
-// import { DBConnections } from './Server'
-
-// let app
-
-// beforeAll(async () => {
-//   await DBConnections()
-//   return app = await import('./App')
-// })
-
-// let header = {
-//   Authorization :'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im1pY2hlYWwxMjNAZ21haWwuY29tIiwidXNlcklkIjoiYzRjYmJkMGQtZTUwOS00MjNmLWI3YWYtYzEwZThlN2I4OTNmIiwiaWF0IjoxNjk0NDk2NjQ0LCJleHAiOjE2OTQ1ODMwNDR9.dXlhwE32oONDJ5nMWZ7LYXu1PkVsjo9L-FKa0rVhqpg'
-// }
-// describe('checking bulk template creation Api endpoint', () => {
-//   it('Post/templates/create', async () => {
-//     const response = await supertest(app.default).post('/templates/create/106769052057950').set(header).send(createTemplateReq)
-//     expect(response.body.statusCode).toEqual(200)
-//     expect(response.body.message).toEqual('success')
-//     expect(response.body.data).not.toBe(null)
-//   })
-// })
-// describe('send template for approval Api endpoint', () => {
-//   it('patch/:templateId/submit', async () => {
-//     const response = await supertest(app.default).patch('/templates/645384a70b7e39e051e61c05/submit/106769052057950').set(header)
-//     expect(response.body.statusCode).toEqual(200)
-//     expect(response.body.message).toEqual('success')
-//     expect(response.body.data).not.toBe(null)
-//   })
-// })
-// describe('upload file Api endpoint', () => {
-//   it('Post/templates/upload', async () => {
-//     let response = await supertest(app.default).post('/templates/upload/106769052057950').set(header).attach('uploadFile', `${__dirname}/file_example_JPG_100kB.jpg`)
-//     expect(response.body.statusCode).toEqual(200)
-//     expect(response.body.message).toEqual('success')
-//     expect(response.body.data).not.toBe(null)
-//   })
-// })
-// describe('edit template Api endpoint', () => {
-//   it('Post/templates/edit/:templateId', async () => {
-//     const response = await supertest(app.default).post('/templates/edit/645384a70b7e39e051e61c05/106769052057950').set(header).send({
-//       name: 'media_viva_tempalates_09',
-//       language: {
-//         code: 'en'
-//       },
-//       category: 'MARKETING',
-//       components: [
-//         {
-//           type: 'HEADER',
-//           format: 'VIDEO',
-//           example: {
-//             headerHandle: '4::aW1hZ2UvanBlZw==:ARaxp2xeg_KT50RE0N_coVR-H9w4-0L6pQOQYg9Gr1EuqJY_GJEsJgqsbBXlOy_JuJA8C4zCde53e3dF1PUeAQLLb54VAezpyCj0fn1qHpvP0A:e:1683024776:1175759883130788:100003271262436:ARamx1176O6HzO4-y8s'
-//           }
-//         },
-//         {
-//           type: 'BODY',
-//           text: "The React. js framework is an open-source JavaScript framework and library developed by Facebook. It's used for building interactive user interfaces and web applications quickly and efficiently with significantly less code than you would with vanilla JavaScript."
-//         },
-//         {
-//           type: 'FOOTER',
-//           text: 'vivaconnect'
-//         }
-//       ]
-//     })
-//     expect(response.body.statusCode).toEqual(200)
-//     expect(response.body.message).toEqual('success')
-//     expect(response.body.data).not.toBe(null)
-//   })
-// })
-// describe('get template count Api endpoint', () => {
-//   it('get/templates/count/:wabaId', async () => {
-//     const response = await supertest(app.default).get('/templates/count/106769052057950').set(header)
-//     expect(response.body.statusCode).toEqual(200)
-//     expect(response.body.message).toEqual('success')
-//     expect(response.body.data).not.toBe(null)
-//   })
-// })
-
-
 
 const request = require('supertest');
 const app = require('./server');
@@ -98,7 +16,7 @@ describe('User Authentication Endpoints', () => {
       //   .send(newUser);
 
       let response = await request(app).post('/user/signUp').send(newUser)
-      expect(response.statusCode).toEqual(200)
+      expect(response.code).toEqual(200)
       expect(response.body).toEqual('success')
       // expect(response.body.data).not.toBe(null)
       // expect(response.statusCode).toBe(201);
