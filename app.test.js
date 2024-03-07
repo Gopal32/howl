@@ -1,100 +1,100 @@
-
 const request = require('supertest');
 const app = require('./server');
-let token
+let token, productId
+
 describe('User Authentication Endpoints', () => {
   // Test case for signing up a new user
   describe('POST /user/signUp', () => {
     it('should create a new user account', async () => {
       const newUser = {
-        username: 'Test_1234',
-        password: 'Test@1234'
+        "username": "support",
+        "password": "Support@12"
       };
 
-      // const response = await request(app)
-      //   .post('/user/signUp')
-      //   .send(newUser);
-
-      let response = await request(app).post('/user/signUp').send(newUser)
-      expect(response.code).toEqual(200)
-      expect(response.body).toEqual('success')
-      // expect(response.body.data).not.toBe(null)
-      // expect(response.statusCode).toBe(201);
-      // expect(response.body).toHaveProperty('message', 'Success');
-      // token = response.body.data.token
+      const response = await request(app)
+        .post('/user/signUp')
+        .send(newUser);
+      expect(response.statusCode).toBe(200);
+      expect(response.body).toHaveProperty('message', 'Success');
+      token = 'Bearer ' + response.body.token
     });
   });
 
-  // // Test case for signing in an existing user
-  // describe('POST /user/signIn', () => {
-  //   it('should authenticate an existing user', async () => {
-  //     const existingUser = {
-  //       username: 'existinguser',
-  //       password: 'existingpassword'
-  //     };
+  describe('User Authentication Endpoints', () => {
+    // Test case for signing in a new user
+    it('Post /user/signIn', async () => {
+      const newUser = {
+        "username": "support",
+        "password": "Support@12"
+      };
+      const response = await  request(app)
+      .post('/user/signIn')
+      expect(response.statusCode).toBe(200);
+      expect(response.body).toHaveProperty('message', 'Success');
+    })
+  })
 
-  //     const response = await request(app)
-  //       .post('/user/signIn')
-  //       .send(existingUser);
+  describe('Product Endpoints', () => {
+    // Test case for create product
+    it('Post /product/create', async () => {
+      const newUser = {
+        "name": "Buy Apple Watch Series 9",
+        "description": "Silver Aluminium Case with Sport Band",
+        "price":10000,
+        "stockQuantity":5
+      };
+      const response = await  request(app)
+      .post('/product/create').set(token)
+      expect(response.statusCode).toBe(200);
+      expect(response.body).toHaveProperty('message', 'Success');
+      productId = response.body.productId
+    })
+  })
 
-  //     expect(response.statusCode).toBe(200);
-  //     expect(response.body).toHaveProperty('message', 'Success');
-  //   });
-  // });
+  describe('Product Endpoints', () => {
+    // Test case for update product
+    it('Put /product/update/:ProductId', async () => {
+      const newUser = {
+        "name": "Buy Apple Watch Series 10",
+        "description": "Silver Aluminium Case with Sport Band",
+        "price":10000,
+        "stockQuantity":5
+      };
+      const response = await  request(app)
+      .put(`/product/update/${productId}`).set(token)
+      expect(response.statusCode).toBe(200);
+      expect(response.body).toHaveProperty('message', 'Product Insert successfully');
+    })
+  })
 
+  describe('Product Endpoints', () => {
+    // Test case for delete product
+    it('Get /product/delete/:ProductId', async () => {
+      const response = await  request(app)
+      .get(`/product/delete/${productId}`).set(token)
+      expect(response.statusCode).toBe(200);
+      expect(response.body).toHaveProperty('message', 'Product updated successfully');
+    })
+  })
 
-  // // Test case for signing in an existing user
-  // describe('POST /user/signIn', () => {
-  //   it('should authenticate an existing user', async () => {
-  //     const existingUser = {
-  //       username: 'existinguser',
-  //       password: 'existingpassword'
-  //     };
+  describe('Product Endpoints', () => {
+    // Test case for info product
+    it('Get /product/info/:ProductId', async () => {
+      const response = await  request(app)
+      .get(`/product/info/${productId}`).set(token)
+      expect(response.statusCode).toBe(200);
+      expect(response.body).toHaveProperty('message', 'Product delete successfully');
+    })
+  })
 
-  //     const response = await request(app)
-  //       .post('/user/signIn')
-  //       .send(existingUser);
+  describe('Product Endpoints', () => {
+    // Test case for list product
+    it('Get /product/list', async () => {
+      const response = await  request(app)
+      .get(`/product/list`).set(token)
+      expect(response.statusCode).toBe(200);
+      expect(response.body).toHaveProperty('message', 'Success');
+    })
+  })
 
-  //     expect(response.statusCode).toBe(200);
-  //     expect(response.body).toHaveProperty('message', 'Success');
-  //   });
-  // });
-
-  // describe('Product Insert Endpoint', () => {
-  //   it('should insert a new product with valid JWT token', async () => {
-
-  //     const newProduct = {
-  //       name: 'Test Product',
-  //       description: 'This is a test product',
-  //       price: 10,
-  //       stockQuantity: 100
-  //     };
-
-  //     const response = await request(app)
-  //       .post('/product/create')
-  //       .set('Authorization', `Bearer ${token}`)
-  //       .send(newProduct);
-
-  //     expect(response.statusCode).toBe(201); // Assuming 201 is the status code for successful creation
-  //     expect(response.body).toHaveProperty('message', 'Product created successfully');
-  //     // Additional assertions can be made based on the response body or any side effects (like database changes)
-  //   });
-
-  //   it('should return 401 Unauthorized without JWT token', async () => {
-  //     const newProduct = {
-  //       name: 'Test Product',
-  //       description: 'This is a test product',
-  //       price: 10.99,
-  //       stockQuantity: 100
-  //     };
-
-  //     const response = await request(app)
-  //       .post('/product/create')
-  //       .send(newProduct);
-
-  //     expect(response.statusCode).toBe(401); // Assuming 401 is the status code for unauthorized access
-  //     expect(response.body).toHaveProperty('error', 'Unauthorized');
-  //     // Additional assertions can be made based on the response body or any side effects
-  //   });
-  // });
 });
