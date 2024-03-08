@@ -1,38 +1,90 @@
 const { v4: uuidv4 } = require('uuid');
+const { insertOne, updateOne, aggregate, findOne } = require('./mongoDb')
 const db = require('../server')
-const collectionName = 'users'
+const collectionName = 'products'
 
-const createUserModel = async (user) => {
-    const { username, password } = user;
-    // Check if username already exists
-    const existingUser = await db.mongoConnection.collection(collectionName).findOne({ username });
-    if (existingUser) {
-        throw new Error('Username already exists');
-    }
-
-    // Generate UUID for id
-    const userId = uuidv4();
-
+const insertItem = async (product, userId) => {
+    const { name, description, price, stockQuantity } = product;
+    // Generate UUID for product ID
+    const productId = uuidv4();
     // Create user in database
-    await db.mongoConnection.collection(collectionName).insertOne({ userId, username, password });
+    await insertOne(collectionName, { productId, name, description, price, stockQuantity, createdBy: userId, isActive: true, createdOn: new Date() });
 
-    return { userId, username };
+    return { productId };
 };
 
-const checkUserModel = async (user) => {
-    const { username, password } = user;
-    // Check if username exists
-    const userDetails = await db.mongoConnection.collection(collectionName).findOne({ username }, { $projection: { username: 1, password: 1, userId: 1, _id: 0 } });
-    if (!user) {
-        throw new Error('Invalid username or password');
+const updateItem = async (productId, product, userId) => {
+
+    const { name, description, price, stockQuantity } = product;
+
+    // Update product details
+    const productDetails = await updateOne(collectionName,
+        { productId, isActive: true, createdBy: userId },
+        { $set: { name, description, price, stockQuantity, updatedBy: userId, updatedOn: new Date() } }
+    );
+    if (productDetails && productDetails.modifiedCount < 1) {
+        throw new Error('Product not found');
     }
 
-    // Check if password is correct
-    if (password !== userDetails.password) {
-        throw new Error('Invalid username or password');
-    }
-    delete userDetails.password
-    return userDetails
+    return { productId }
 }
 
-module.exports = { createUserModel, checkUserModel };
+const deleteItem = async (productId, userId) => {
+
+    // Delet product details
+    const productDetails = await updateOne(collectionName,
+        { productId, isActive: true, createdBy: userId },
+        { $set: { isActive: false, updatedBy: userId, updatedOn: new Date() } }
+    );
+    if (productDetails && productDetails.modifiedCount < 1) {
+        throw new Error('Product not found');
+    }
+
+    return { productId }
+}
+
+const findByIdItem = async (productId) => {
+
+    // Find single product details
+    const productDetails = await findOne(collectionName,
+        { productId, isActive: true },
+    );
+    if (!productDetails) {
+        throw new Error('Product not found');
+    }
+
+    return productDetails
+}
+
+const findListItem = async (limit, offset) => {
+
+    const pipeline = [{
+        $match: {
+            isActive: true
+        }
+    },
+    {
+        $facet: {
+            data: [
+                { $skip: offset },
+                { $limit: parseInt(limit) }
+            ],
+            totalCount: [{
+                $match: {
+                    isActive: true
+                }
+            },
+            { $count: 'count' }
+            ]
+        }
+    }]
+    // Find single product details
+    const productDetails = await aggregate(collectionName, pipeline);
+    if (productDetails && productDetails[0].data.length === 0) {
+        throw new Error('Product not found');
+    }
+
+    return productDetails
+}
+
+module.exports = { insertItem, updateItem, deleteItem, findByIdItem, findListItem };
